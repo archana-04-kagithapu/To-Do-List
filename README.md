@@ -29,9 +29,9 @@ A simple, responsive **To-Do List** web application built using **HTML**, **CSS*
 ## 📁 Folder Structure
 
 To-Do-List/
-├── index.html
-├── style.css
-└── script.js
+- index.html
+- style.css
+- script.js
 
 ---
 
@@ -39,11 +39,38 @@ To-Do-List/
 
 You can easily tweak the app to suit your needs:
 
-🎨 Edit colors, fonts, and layout in style.css
+- 🎨 Edit colors, fonts, and layout in style.css
 
-💡 Add features like:
+- 💡 Add features like:
 
 ---
+
+### 📚 Learning Goals
+
+This project helps strengthen:
+- ✅ HTML/CSS layout and responsive design
+- ✅ DOM manipulation with JavaScript
+- ✅ Git & GitHub workflow
+- ✅ Deployment with GitHub Pages
+- ✅ LocalStorage usage in browser apps
+
+---
+
+### 🧠 Future Enhancements
+- Add task editing functionality
+
+- Add due dates and reminders
+
+- Task filtering and sorting
+
+- Dark mode toggle
+
+- Drag-and-drop task rearranging
+
+- PWA support (installable app)
+
+---
+
 
 Task priority (High/Medium/Low)
 Due dates
@@ -58,3 +85,14 @@ Dark/Light mode switch
 ```bash
 git clone https://github.com/archana-04-kagithapu/To-Do-List.git
 cd To-Do-List
+```
+
+---
+
+### 🙋‍♀️ Author
+
+Archana Kagithapu
+
+- GitHub: @Archana-04-Kagithapu
+
+- Live Project: To-Do List Web App.(https://archana-04-kagithapu.github.io/To-Do-List/)
