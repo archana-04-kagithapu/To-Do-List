@@ -26,23 +26,31 @@ A simple, responsive **To-Do List** web application built using **HTML**, **CSS*
 
 ---
 
-📁 Folder Structure
+## 📁 Folder Structure
+
 To-Do-List/
 ├── index.html
 ├── style.css
 └── script.js
 
-Customization
+---
+
+### Customization
+
 You can easily tweak the app to suit your needs:
 
 🎨 Edit colors, fonts, and layout in style.css
 
 💡 Add features like:
 
+---
+
 Task priority (High/Medium/Low)
 Due dates
 Filters or search functionality
 Dark/Light mode switch
+
+---
 
 ## 🚀 Getting Started
 
