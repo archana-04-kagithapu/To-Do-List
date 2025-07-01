@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personalized To-Do List with Greeting</title>
+  <style>
+    /* --- Basic Reset and Layout --- */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .container {
+      background: #fff;
+      margin: 40px 0;
+      border-radius: 12px;
+      box-shadow: 0 6px 24px rgba(44, 62, 80, 0.10);
+      padding: 32px 24px 36px;
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      z-index: 1;
+    }
+    #greeting {
+      font-size: 20px;
+      font-weight: 600;
+      color: #3498db;
+      margin-bottom: 6px;
+      text-align: center;
+      user-select: none;
+    }
+    h1 {
+      text-align: center;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+    form {
+      margin-bottom: 24px;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 18px 14px 10px;
+      box-shadow: 0 1px 4px rgba(44, 62, 80, 0.03);
+    }
+    .form-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .form-row label {
+      flex: 0 0 90px;
+      font-size: 14px;
+      color: #555;
+      padding-top: 7px;
+    }
+    .form-row input, .form-row select, .form-row textarea {
+      flex: 1 1 auto;
+      padding: 8px 10px;
+      font-size: 15px;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+    .form-row textarea {
+      resize: vertical;
+      min-height: 36px;
+      max-height: 90px;
+    }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+    .form-actions {
+      text-align: right;
+      margin-top: 8px;
+    }
+    .form-actions button {
+      background: #3498db;
+      color: #fff;
+      border: none;
+      font-size: 15px;
+      padding: 8px 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-left: 8px;
+    }
+    .form-actions button:hover {
+      background: #217dbb;
+    }
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .filter-group label {
+      font-size: 13px;
+      color: #555;
+    }
+    .filter-group select {
+      padding: 5px 9px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #f4f7fa;
+    }
+    ul.task-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    ul.task-list li {
+      background: #f8fafc;
+      border: 1px solid #e1e7ef;
+      border-radius: 8px;
+      margin-bottom: 13px;
+      padding: 14px 13px 11px 13px;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.2s;
+      position: relative;
+    }
+    ul.task-list li.completed {
+      background: #e7f3e7;
+      color: #888;
+      text-decoration: line-through;
+    }
+    .task-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .task-title {
+      font-size: 17px;
+      font-weight: 600;
+      flex: 1 1 auto;
+      cursor: pointer;
+      user-select: none;
+      word-break: break-word;
+    }
+    .task-category {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 10px;
+      border-radius: 12px;
+      background: #e3eafc;
+      color: #2962ff;
+      margin-left: 8px;
+      margin-right: 0;
+    }
+    .task-category.Work { background: #e3eafc; color: #2962ff; }
+    .task-category.Personal { background: #ffe3e3; color: #d32f2f; }
+    .task-category.Shopping { background: #e3fae3; color: #388e3c; }
+    .task-category.Other { background: #f8e3fc; color: #8e24aa; }
+    .task-desc {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 3px;
+      margin-left: 2px;
+      white-space: pre-line;
+      word-break: break-word;
+    }
+    .task-meta {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      color: #888;
+      margin-left: 2px;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+    .task-actions {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: flex;
+      gap: 8px;
+    }
+    .task-actions button {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 17px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .task-actions button:hover {
+      background: #e3eafc;
+      color: #2962ff;
+    }
+    .task-actions .delete-btn:hover {
+      background: #ffe3e3;
+      color: #d32f2f;
+    }
+    .task-actions .complete-btn:hover {
+      background: #e3fae3;
+      color: #388e3c;
+    }
+    .no-tasks {
+      text-align: center;
+      color: #aaa;
+      font-style: italic;
+      margin-top: 40px;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 10px 2vw 18px; }
+      .form-row label { flex: 0 0 70px; }
+    }
+
+    /* --- Modal Overlay for Name Input --- */
+    #name-modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    #name-modal.hidden {
+      display: none;
+    }
+    #name-modal .modal-content {
+      background: white;
+      border-radius: 10px;
+      padding: 30px 25px 25px;
+      width: 90%;
+      max-width: 360px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    #name-modal label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      display: block;
+      margin-bottom: 12px;
+    }
+    #name-modal input[type="text"] {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1.5px solid #ddd;
+      margin-bottom: 18px;
+      transition: border-color 0.3s;
+    }
+    #name-modal input[type="text"]:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+    #name-modal button {
+      background: #3498db;
+      color: white;
+      border: none;
+      font-size: 16px;
+      padding: 10px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #name-modal button:hover {
+      background: #217dbb;
+    }
+  </style>
+</head>
+<body>
+  <!-- Name modal -->
+  <div id="name-modal" role="dialog" aria-modal="true" aria-labelledby="name-label">
+    <div class="modal-content">
+      <label id="name-label" for="username-input">What's your name?</label>
+      <input type="text" id="username-input" placeholder="Enter your name" aria-required="true" autocomplete="off" />
+      <button id="name-submit-btn">Start</button>
+    </div>
+  </div>
+
+  <div class="container" role="main" aria-label="To-Do List Application">
+    <div id="greeting" aria-live="polite" aria-atomic="true"></div>
+    <h1>To-Do List</h1>
+    <form id="task-form" aria-label="Add or edit task form">
+      <input type="hidden" id="edit-index" />
+      <div class="form-row">
+        <label for="title">Title*</label>
+        <input id="title" type="text" required maxlength="60" placeholder="Task title" aria-required="true" />
+      </div>
+      <div class="form-row">
+        <label for="description">Description</label>
+        <textarea id="description" maxlength="200" placeholder="Task details (optional)"></textarea>
+      </div>
+      <div class="form-row">
+        <label for="due">Due Date</label>
+        <input id="due" type="date" aria-describedby="due-desc" />
+      </div>
+      <div class="form-row">
+        <label for="category">Category</label>
+        <select id="category" aria-describedby="category-desc">
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="submit" id="submit-btn">Add Task</button>
+        <button type="button" id="cancel-btn" style="display:none;background:#888;">Cancel</button>
+      </div>
+    </form>
+
+    <div class="filter-bar" role="region" aria-label="Filter tasks">
+      <div class="filter-group">
+        <label for="status-filter">Status:</label>
+        <select id="status-filter">
+          <option value="all">All</option>
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="category-filter">Category:</label>
+        <select id="category-filter">
+          <option value="all">All</option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <ul id="task-list" class="task-list" aria-live="polite" aria-relevant="additions removals"></ul>
+    <div id="no-tasks" class="no-tasks" style="display:none;">No tasks found.</div>
+  </div>
+  <script>
+    // Elements for modal
+    const nameModal = document.getElementById('name-modal');
+    const usernameInput = document.getElementById('username-input');
+    const nameSubmitBtn = document.getElementById('name-submit-btn');
+    const greetingDiv = document.getElementById('greeting');
+
+    // --- Greeting with name ---
+    function getTimeGreeting() {
+      const now = new Date();
+      const hour = now.getHours();
+      if (hour >= 5 && hour < 12) return 'Good Morning';
+      if (hour >= 12 && hour < 17) return 'Good Afternoon';
+      if (hour >= 17 && hour < 21) return 'Good Evening';
+      return 'Good Night';
+    }
+
+    function setGreeting(name) {
+      greetingDiv.textContent = `${getTimeGreeting()}, ${name}!`;
+    }
+
+    // --- Check if name is saved ---
+    let username = localStorage.getItem('todoUsername');
+
+    function showNameModal() {
+      nameModal.classList.remove('hidden');
+      usernameInput.focus();
+    }
+    function hideNameModal() {
+      nameModal.classList.add('hidden');
+    }
+
+    if (!username) {
+      showNameModal();
+    } else {
+      setGreeting(username);
+    }
+
+    // Handle modal submission
+    function submitName() {
+      const nameVal = usernameInput.value.trim();
+      if (nameVal.length < 2) {
+        alert('Please enter your name (at least 2 characters).');
+        usernameInput.focus();
+        return;
+      }
+      username = nameVal;
+      localStorage.setItem('todoUsername', username);
+      setGreeting(username);
+      hideNameModal();
+    }
+
+    nameSubmitBtn.addEventListener('click', submitName);
+    usernameInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitName();
+      }
+    });
+
+    // --- To-Do List Logic ---
+    let tasks = JSON.parse(localStorage.getItem('tasks-v2')) || [];
+
+    const taskForm = document.getElementById('task-form');
+    const titleInput = document.getElementById('title');
+    const descInput = document.getElementById('description');
+    const dueInput = document.getElementById('due');
+    const catInput = document.getElementById('category');
+    const editIndexInput = document.getElementById('edit-index');
+    const submitBtn = document.getElementById('submit-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const taskList = document.getElementById('task-list');
+    const noTasksDiv = document.getElementById('no-tasks');
+    const statusFilter = document.getElementById('status-filter');
+    const catFilter = document.getElementById('category-filter');
+
+    function saveTasks() {
+      localStorage.setItem('tasks-v2', JSON.stringify(tasks));
+    }
+    function clearForm() {
+      editIndexInput.value = '';
+      titleInput.value = '';
+      descInput.value = '';
+      dueInput.value = '';
+      catInput.value = 'Work';
+      submitBtn.textContent = 'Add Task';
+      cancelBtn.style.display = 'none';
+    }
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      if (isNaN(d)) return '';
+      return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function renderTasks() {
+      const status = statusFilter.value;
+      const cat = catFilter.value;
+      let filtered = tasks;
+      if (status !== 'all') {
+        filtered = filtered.filter(t => status === 'pending' ? !t.completed : t.completed);
+      }
+      if (cat !== 'all') {
+        filtered = filtered.filter(t => t.category === cat);
+      }
+
+      taskList.innerHTML = '';
+      if (filtered.length === 0) {
+        noTasksDiv.style.display = 'block';
+        return;
+      }
+      noTasksDiv.style.display = 'none';
+
+      filtered.forEach((task) => {
+        const li = document.createElement('li');
+        if (task.completed) li.classList.add('completed');
+
+        const top = document.createElement('div');
+        top.className = 'task-top';
+
+        const title = document.createElement('span');
+        title.className = 'task-title';
+        title.textContent = task.title;
+        title.title = 'Click to mark as completed';
+        title.tabIndex = 0;
+        title.onclick = () => toggleComplete(task.id);
+        title.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') toggleComplete(task.id); };
+        top.appendChild(title);
+
+        const catSpan = document.createElement('span');
+        catSpan.className = 'task-category ' + task.category;
+        catSpan.textContent = task.category;
+        top.appendChild(catSpan);
+
+        li.appendChild(top);
+
+        if (task.description) {
+          const desc = document.createElement('div');
+          desc.className = 'task-desc';
+          desc.textContent = task.description;
+          li.appendChild(desc);
+        }
+
+        if (task.dueDate) {
+          const meta = document.createElement('div');
+          meta.className = 'task-meta';
+          meta.innerHTML = `<span>Due: ${formatDate(task.dueDate)}</span>`;
+          li.appendChild(meta);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'task-actions';
+
+        const completeBtn = document.createElement('button');
+        completeBtn.className = 'complete-btn';
+        completeBtn.title = task.completed ? 'Mark as Pending' : 'Mark as Completed';
+        completeBtn.innerHTML = task.completed ? '↩️' : '✔️';
+        completeBtn.onclick = () => toggleComplete(task.id);
+        actions.appendChild(completeBtn);
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.title = 'Edit Task';
+        editBtn.innerHTML = '✏️';
+        editBtn.onclick = () => startEdit(task.id);
+        actions.appendChild(editBtn);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.title = 'Delete Task';
+        delBtn.innerHTML = '🗑️';
+        delBtn.onclick = () => deleteTask(task.id);
+        actions.appendChild(delBtn);
+
+        li.appendChild(actions);
+
+        taskList.appendChild(li);
+      });
+    }
+
+    function addTask(task) {
+      tasks.push(task);
+      saveTasks();
+      renderTasks();
+    }
+    function updateTask(idx, updated) {
+      tasks[idx] = updated;
+      saveTasks();
+      renderTasks();
+    }
+    function deleteTask(id) {
+      if (!confirm('Delete this task?')) return;
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasks();
+      renderTasks();
+      clearForm();
+    }
+    function toggleComplete(id) {
+      const idx = tasks.findIndex(t => t.id === id);
+      if (idx === -1) return;
+      tasks[idx].completed = !tasks[idx].completed;
+      saveTasks();
+      renderTasks();
+    }
+    function startEdit(id) {
+      const idx = tasks.findIndex(t => t.id === id);
+      if (idx === -1) return;
+      const task = tasks[idx];
+      editIndexInput.value = id;
+      titleInput.value = task.title;
+      descInput.value = task.description || '';
+      dueInput.value = task.dueDate || '';
+      catInput.value = task.category || 'Work';
+      submitBtn.textContent = 'Update Task';
+      cancelBtn.style.display = 'inline-block';
+      titleInput.focus();
+    }
+
+    taskForm.onsubmit = function(e) {
+      e.preventDefault();
+      const title = titleInput.value.trim();
+      if (!title) return;
+      const description = descInput.value.trim();
+      const dueDate = dueInput.value || '';
+      const category = catInput.value;
+      const editId = editIndexInput.value;
+
+      if (editId) {
+        const idx = tasks.findIndex(t => t.id === editId);
+        if (idx === -1) return;
+        updateTask(idx, {
+          ...tasks[idx],
+          title,
+          description,
+          dueDate,
+          category
+        });
+      } else {
+        addTask({
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2,4),
+          title,
+          description,
+          dueDate,
+          category,
+          completed: false
+        });
+      }
+      clearForm();
+    };
+
+    cancelBtn.onclick = function() {
+      clearForm();
+    };
+
+    statusFilter.onchange = renderTasks;
+    catFilter.onchange = renderTasks;
+
+    // Initial render
+    renderTasks();
+  </script>
+</body>
+</html>
